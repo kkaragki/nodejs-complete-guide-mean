@@ -1,0 +1,8 @@
+mat-card {
+  width: 50%;
+  margin: 0 10px;
+}
+
+mat-paginator {
+  margin-top: 1rem;
+}

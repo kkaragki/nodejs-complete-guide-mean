@@ -1,0 +1,26 @@
+<mat-spinner *ngIf="isLoading"></mat-spinner>
+<div style="display: flex;" *ngIf="products.length > 0 && !isLoading">
+  <mat-card *ngFor="let product of products">
+    <mat-card-title style="text-align: center;">
+      {{ product.title }}
+    </mat-card-title>
+    <img mat-card-image [src]="'http://localhost:3000/' + product.imageURL" [alt]="product.title">
+    <mat-card-content style="text-align: center; font-size: 30px; font-weight: bold;">
+      € {{ product.price }}
+    </mat-card-content>
+    <mat-card-content style="text-align: center; font-size: 20px;">
+      {{ product.description }}
+    </mat-card-content>
+    <mat-card-actions>
+      <button mat-button (click)="onDetails()">DETAILS</button>
+      <button mat-button *ngIf="userIsAuthenticated" (click)="addToCart()">ADD TO CART</button>
+    </mat-card-actions>
+  </mat-card>
+</div>
+<mat-paginator
+  *ngIf="products.length > 0"
+  [length]="totalProducts"
+  [pageSize]="productsPerPage"
+  [pageSizeOptions]="pageSizeOptions"
+  (page)="onChangedPage($event)"></mat-paginator>
+<p class="info-text mat-body-1" *ngIf="products.length <= 0 && !isLoading">No products added yet!</p>
