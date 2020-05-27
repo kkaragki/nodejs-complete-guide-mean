@@ -5,6 +5,7 @@ import { RouterModule } from '@angular/router';
 
 import { ProductCreateComponent } from './product-create/product-create.component';
 import { ProductListComponent } from './product-list/product-list.component';
+import { ProductItemComponent } from './product-item/product-item.component';
 
 import { AngularMaterialModule } from '../angular-material.module';
 
@@ -12,6 +13,7 @@ import { AngularMaterialModule } from '../angular-material.module';
   declarations: [
     ProductCreateComponent,
     ProductListComponent,
+    ProductItemComponent
   ],
   imports: [
     CommonModule,

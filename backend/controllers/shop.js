@@ -71,16 +71,14 @@ exports.getProduct = (req, res, next) => {
   const prodId = req.params.productId;
   Product.findById(prodId)
     .then(product => {
-      res.render('shop/product-detail', {
-        product: product,
-        pageTitle: product.title,
-        path: '/products'
-      });
+      if (product) {
+        res.status(200).json(product)
+      } else {
+        res.status(404).json({ message: "Product not found!" });
+      }
     })
     .catch(err => {
-      const error = new Error(err);
-      error.httpStatusCode = 500;
-      return next(error);
+      res.status(500).json({ message: "Fetching product failed!" });
     });
 };
 

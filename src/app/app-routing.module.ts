@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { ProductListComponent } from './products/product-list/product-list.component';
 import { ProductCreateComponent } from './products/product-create/product-create.component';
+import { ProductItemComponent } from './products/product-item/product-item.component';
 import { CartComponent } from './shop/cart/cart.component';
 import { OrdersComponent } from './shop/orders/orders.component';
 
@@ -13,8 +14,8 @@ const routes: Routes = [
   { path: 'products', component: ProductListComponent },
   {
     path: 'products/:productId',
-    component: ProductCreateComponent,
-    canActivate: [AuthGuard],
+    component: ProductItemComponent,
+    // canActivate: [AuthGuard],
   },
   { path: 'cart', component: CartComponent },
   { path: 'orders', component: OrdersComponent },

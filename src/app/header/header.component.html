@@ -3,7 +3,7 @@
     <a routerLink="/">Shop</a>
   </span>
   <ul class="leftMenu">
-    <li *ngIf="!userIsAuthenticated">
+    <li>
       <a mat-button routerLink="/products" routerLinkActive="mat-accent">Products</a>
     </li>
     <li *ngIf="userIsAuthenticated">

@@ -1,0 +1,6 @@
+<img [src]="'http://localhost:3000/' + imagePreview" [alt]="product?.title">
+<h3>{{ product?.title }}</h3>
+<p>€ {{ product?.price }}</p>
+<p>{{ product?.description }}</p>
+
+<button mat-raised-button *ngIf="userIsAuthenticated" (click)="addToCart()">ADD TO CART</button>

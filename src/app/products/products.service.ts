@@ -19,7 +19,7 @@ export class ProductsService {
     const queryParams = `?pagesize=${postsPerPage}&page=${currentPage}`;
     this.http
       .get<{ message: string; products: any; maxProducts: number }>(
-        'http://localhost:3000/products' + queryParams
+        BACKEND_URL + queryParams
       )
       .pipe(
         map((productData) => {
@@ -48,6 +48,16 @@ export class ProductsService {
 
   getPostUpdateListener() {
     return this.productsUpdated.asObservable();
+  }
+
+  getProduct(id: string) {
+    return this.http.get<{
+      _id: string;
+      title: string;
+      imageURL: string;
+      price: number;
+      description: string;
+    }>(BACKEND_URL + id);
   }
 }
 

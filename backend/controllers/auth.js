@@ -1,7 +1,6 @@
 const crypto = require('crypto');
-
 const bcrypt = require('bcryptjs');
-const { validationResult } = require('express-validator');
+const jwt = require("jsonwebtoken");
 
 const User = require('../models/user');
 
@@ -29,66 +28,32 @@ exports.postLogin = (req, res, next) => {
   const email = req.body.email;
   const password = req.body.password;
 
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(422).render('auth/login', {
-      path: '/login',
-      pageTitle: 'Login',
-      errorMessage: errors.array()[0].msg,
-      oldInput: {
-        email: email,
-        password: password
-      },
-      validationErrors: errors.array()
-    });
-  }
-
+  let fetchedUser;
   User.findOne({ email: email })
     .then(user => {
       if (!user) {
-        return res.status(422).render('auth/login', {
-          path: '/login',
-          pageTitle: 'Login',
-          errorMessage: 'Invalid email or password.',
-          oldInput: {
-            email: email,
-            password: password
-          },
-          validationErrors: []
-        });
+        return res.status(401).json({ message: "Auth failed" });
       }
-      bcrypt
-        .compare(password, user.password)
-        .then(doMatch => {
-          if (doMatch) {
-            req.session.isLoggedIn = true;
-            req.session.user = user;
-            return req.session.save(err => {
-              console.log(err);
-              res.redirect('/');
-            });
-          }
-          req.flash('error', 'Invalid email or password.');
-          return res.status(422).render('auth/login', {
-            path: '/login',
-            pageTitle: 'Login',
-            errorMessage: 'Invalid email or password.',
-            oldInput: {
-              email: email,
-              password: password
-            },
-            validationErrors: []
-          });
-        })
-        .catch(err => {
-          console.log(err);
-          res.redirect('login');
-        });
+      fetchedUser = user;
+      return bcrypt.compare(password, user.password);
+    })
+    .then(doMatch => {
+      if (!doMatch) {
+        return res.status(401).json({ message: "Auth failed" });
+      }
+      const token = jwt.sign(
+        { email: fetchedUser.email, userId: fetchedUser._id },
+        process.env.JWT_KEY,
+        { expiresIn: "1h" }
+      );
+      // req.session.isLoggedIn = true;
+      // req.session.user = user;
+      res
+        .status(200)
+        .json({ token: token, expiresIn: 3600, userId: fetchedUser._id });
     })
     .catch(err => {
-      const error = new Error(err);
-      error.httpStatusCode = 500;
-      return next(error);
+      return res.status(401).json({ message: 'Invalid authentication credentials!' });
     });
 };
 // #endregion
@@ -118,22 +83,6 @@ exports.postSignup = (req, res, next) => {
   const email = req.body.email;
   const password = req.body.password;
 
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    console.log(errors.array());
-    return res.status(422).render('auth/signup', {
-      path: '/signup',
-      pageTitle: 'Sign Up',
-      errorMessage: errors.array()[0].msg,
-      oldInput: {
-        email: email,
-        password: password,
-        confirmPassword: req.body.confirmPassword
-      },
-      validationErrors: errors.array()
-    });
-  }
-
   bcrypt
     .hash(password, 12)
     .then(hashedPassword => {
@@ -144,13 +93,13 @@ exports.postSignup = (req, res, next) => {
       });
       return user.save();
     })
-    .then(() => {
-      res.redirect('/login');
+    .then((result) => {
+      res.status(200).json({ message: "User created!", result: result });
     })
     .catch(err => {
-      const error = new Error(err);
-      error.httpStatusCode = 500;
-      return next(error);
+      res.status(500).json({
+        message: 'Invalid authentication credentials!'
+      });
     });
 };
 // #endregion
